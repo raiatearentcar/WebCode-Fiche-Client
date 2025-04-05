@@ -104,6 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.textContent = languageSelect.value === 'fr' ? 'Envoi en cours...' : 'Submitting...';
         submitButton.disabled = true;
         
+        console.log('Envoi des données au serveur:', formDataObj);
+        
         // Envoyer les données au serveur
         fetch('/api/submit', {
             method: 'POST',
@@ -121,16 +123,23 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
+            console.log('Réponse du serveur:', data);
             if (data.error) {
                 throw new Error(data.error);
             }
-            // Affichage du message de succès
-            form.style.display = 'none';
-            successMessage.classList.remove('hidden');
-            alert(languageSelect.value === 'fr' ? 
-                'Formulaire soumis avec succès! ID: ' + data.id : 
-                'Form submitted successfully! ID: ' + data.id);
-            signaturePad.clear();
+            // Affichage du message de succès seulement si on a un ID valide
+            if (data && data.id) {
+                form.style.display = 'none';
+                successMessage.classList.remove('hidden');
+                alert(languageSelect.value === 'fr' ? 
+                    'Formulaire soumis avec succès! ID: ' + data.id : 
+                    'Form submitted successfully! ID: ' + data.id);
+                signaturePad.clear();
+            } else {
+                throw new Error(languageSelect.value === 'fr' ? 
+                    'Réponse du serveur invalide' : 
+                    'Invalid server response');
+            }
         })
         .catch(error => {
             console.error('Erreur:', error);
