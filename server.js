@@ -12,6 +12,13 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Définir l'environnement (production sur Render, développement en local)
+if (process.env.RENDER) {
+  process.env.NODE_ENV = 'production';
+} else {
+  process.env.NODE_ENV = 'development';
+}
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -19,7 +26,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Initialisation de la base de données
-const db = new sqlite3.Database('./database.sqlite', (err) => {
+// Utiliser un chemin qui fonctionne à la fois en local et sur Render
+const dbPath = process.env.NODE_ENV === 'production' ? '/tmp/database.sqlite' : './database.sqlite';
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Erreur de connexion à la base de données:', err.message);
   } else {
@@ -83,11 +92,12 @@ app.get('/api/generate-client-id', (req, res) => {
 function generatePDF(clientData) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 50 });
-    const pdfPath = path.join(__dirname, 'pdfs', `${clientData.id}_${clientData.main_driver_name}_${clientData.main_driver_firstname}.pdf`);
+    const pdfDir = process.env.NODE_ENV === 'production' ? '/tmp/pdfs' : './pdfs';
+    const pdfPath = `${pdfDir}/${clientData.id}_${clientData.main_driver_name}_${clientData.main_driver_firstname}.pdf`;
     
     // Assurez-vous que le dossier pdfs existe
-    if (!fs.existsSync(path.join(__dirname, 'pdfs'))) {
-      fs.mkdirSync(path.join(__dirname, 'pdfs'));
+    if (!fs.existsSync(pdfDir)) {
+      fs.mkdirSync(pdfDir);
     }
     
     const pdfStream = fs.createWriteStream(pdfPath);
@@ -271,7 +281,7 @@ Informations client :
 `,
           attachments: [
             {
-              filename: `fiche_client_${clientData.id}_${clientData.main_driver_name}_${clientData.main_driver_firstname}.pdf`,
+              filename: `${clientData.id}_${clientData.main_driver_name}_${clientData.main_driver_firstname}.pdf`,
               path: pdfPath
             }
           ]
