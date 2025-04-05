@@ -18,15 +18,54 @@ Cette application web permet aux clients de RAIATEA RENT CAR de remplir en ligne
 - Node.js (v14 ou supérieur)
 - npm (inclus avec Node.js)
 
-## Installation
-
-1. Clonez ou téléchargez ce dépôt sur votre serveur
-2. Ouvrez un terminal et naviguez jusqu'au dossier du projet
-3. Installez les dépendances:
+## Installation locale
 
 ```bash
+# Cloner le dépôt
+git clone https://github.com/raiatearentcar/WebCode-Fiche-Client.git
+
+# Accéder au répertoire du projet
+cd WebCode-Fiche-Client
+
+# Installer les dépendances
 npm install
+
+# Configurer les variables d'environnement
+# Créez un fichier .env à la racine du projet avec les informations suivantes :
+PORT=3000
+EMAIL_TO=raiatearentcar@mail.pf
+EMAIL_USER=votre_adresse_email
+EMAIL_PASS=votre_mot_de_passe_email
+EMAIL_HOST=smtp.votre-fournisseur.com
+EMAIL_PORT=587
+
+# Démarrer l'application
+npm start
 ```
+
+## Déploiement sur Render
+
+Cette application est configurée pour être facilement déployée sur Render.com :
+
+1. Créez un compte sur [Render](https://render.com/)
+2. Cliquez sur "New" puis "Web Service"
+3. Connectez votre dépôt GitHub ou utilisez l'URL : `https://github.com/raiatearentcar/WebCode-Fiche-Client.git`
+4. Configurez le service :
+   - **Name** : raiatea-rent-car
+   - **Environment** : Node
+   - **Build Command** : `npm install`
+   - **Start Command** : `node server.js`
+
+5. Ajoutez les variables d'environnement suivantes :
+   - `EMAIL_TO` : raiatearentcar@mail.pf
+   - `EMAIL_USER` : votre_adresse_email
+   - `EMAIL_PASS` : votre_mot_de_passe
+   - `EMAIL_HOST` : smtp.votre-fournisseur.com
+   - `EMAIL_PORT` : 587
+
+6. Cliquez sur "Create Web Service"
+
+L'application sera automatiquement déployée et accessible via l'URL fournie par Render.
 
 4. Configurez les variables d'environnement:
    - Renommez le fichier `.env.example` en `.env`
