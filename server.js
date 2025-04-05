@@ -25,6 +25,31 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Route principale pour s'assurer que l'application fonctionne sur Render
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Route de test pour vérifier le déploiement sur Render
+app.get('/test', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'test.html'));
+});
+
+// Route pour l'interface d'administration
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// Route de diagnostic pour vérifier l'état du serveur
+app.get('/status', (req, res) => {
+  res.json({
+    status: 'ok',
+    environment: process.env.NODE_ENV,
+    render: process.env.RENDER ? true : false,
+    time: new Date().toISOString()
+  });
+});
+
 // Initialisation de la base de données
 // Utiliser un chemin qui fonctionne à la fois en local et sur Render
 const dbPath = process.env.NODE_ENV === 'production' ? '/tmp/database.sqlite' : './database.sqlite';
